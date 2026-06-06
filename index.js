@@ -39,4 +39,24 @@ app.get('/files/:filename', function(req, res){
     })
 })
 
+app.get('/edit/:filename', function(req, res){
+    fs.readFile(`./files/${req.params.filename}.txt`, "utf-8", function(err, filedata){
+        res.render('edit', {filedata: filedata, filename: req.params.filename});
+    })
+})
+
+app.post('/update/:filename', function(req, res){
+
+    fs.rename(`./files/${req.params.filename}.txt`, `./files/${req.body.new_title.split(' ').join('')}.txt`, function(err){
+        if(err){
+            console.error(err);
+            return res.status(500).send("Could not rename this file");
+        }
+        fs.writeFile(`./files/${req.body.new_title}.txt`, req.body.new_details, function(err){
+            res.redirect('/');
+        })
+    })
+    // console.log(req.body)
+})
+
 app.listen(3000);
